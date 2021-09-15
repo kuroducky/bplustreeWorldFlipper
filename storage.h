@@ -4,8 +4,6 @@
 #include <string>
 #include <vector>
 
-using namespace std;
-
 struct record
 {
     char tconst[9];
@@ -22,7 +20,7 @@ class Disk {
     int block_size;
     int records_per_block;
     int num_records;
-    vector<block> blocks;
+    std::vector<block> blocks;
 
 public:
     // Constructor
@@ -33,9 +31,11 @@ public:
 
     // Methods
     void insert(record r);
+    int get_num_records();
+    record get_record(int block_index, int record_index, bool &found);
     void print_records();
     void print_records(int n);
-    void import_tsv(string filename);
+    void import_tsv(std::string filename);
 };
 
 #endif
