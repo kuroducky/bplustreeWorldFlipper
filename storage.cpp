@@ -1,5 +1,6 @@
 #include <fstream>
 #include <iostream>
+#include <iomanip>
 #include <sstream>
 #include <string>
 #include <cstring>
@@ -61,17 +62,16 @@ int Disk::get_num_records()
     return num_records;
 }
 
-record Disk::get_record(int block_index, int record_index, bool &found)
+int Disk::get_record(int block_index, int record_index, record &r)
 {
     if (block_index * records_per_block + record_index > num_records)
     {
-        found = false;
-        return record();
+        return -1;
     }
     else
     {
-        found = true;
-        return blocks[block_index].records[record_index];
+        r = blocks[block_index].records[record_index];
+        return 0;
     }
 }
 
@@ -86,7 +86,7 @@ void Disk::print_records(int n)
     record *ptr;
 
     cout << "Number of blocks: " << blocks.size() << " blocks" << endl;
-    cout << "Size of database: " << num_records * sizeof(record) / int(pow(2, 20)) << " MB" << endl;
+    cout << "Size of database: " << setprecision(3) << num_records * sizeof(record) / pow(2, 20) << " MB" << endl;
 
 
     for (int i=0; i<blocks.size() && i<n; i++)

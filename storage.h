@@ -11,31 +11,34 @@ struct record
     unsigned int numVotes;
 };
 
-struct block {
+struct block
+{
     record *records;
 };
 
-class Disk {
-    // Attributes
-    int block_size;
-    int records_per_block;
-    int num_records;
-    std::vector<block> blocks;
+class Disk
+{
+    private:
+        // Attributes
+        int block_size;
+        int records_per_block;
+        int num_records;
+        std::vector<block> blocks;
+    
+    public:
+        // Constructor
+        Disk(int block_size);
 
-public:
-    // Constructor
-    Disk(int block_size);
+        // Destructor
+        ~Disk();
 
-    // Destructor
-    ~Disk();
-
-    // Methods
-    void insert(record r);
-    int get_num_records();
-    record get_record(int block_index, int record_index, bool &found);
-    void print_records();
-    void print_records(int n);
-    void import_tsv(std::string filename);
+        // Methods
+        void insert(record r);
+        int get_num_records();
+        int get_record(int block_index, int record_index, record &r);
+        void print_records();
+        void print_records(int n);
+        void import_tsv(std::string filename);
 };
 
 #endif
