@@ -62,16 +62,15 @@ int Disk::get_num_records()
     return num_records;
 }
 
-int Disk::get_record(int block_index, int record_index, record &r)
+record *Disk::get_record(int block_index, int record_index)
 {
     if (block_index * records_per_block + record_index > num_records)
     {
-        return -1;
+        return NULL;
     }
     else
     {
-        r = blocks[block_index].records[record_index];
-        return 0;
+        return &(blocks[block_index].records[record_index]);
     }
 }
 

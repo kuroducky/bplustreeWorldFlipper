@@ -35,7 +35,7 @@ class Disk
         // Methods
         void insert(record r);
         int get_num_records();
-        int get_record(int block_index, int record_index, record &r);
+        record *get_record(int block_index, int record_index);
         void print_records();
         void print_records(int n);
         void import_tsv(std::string filename);
