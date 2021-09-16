@@ -18,27 +18,31 @@ int main()
 
     // Inserting into B+ tree
     BPlusTree b_plus_tree(block_size);
-    int number_of_records, block_index, record_index;
     record *some_record;
     bool found;
     
     some_record = NULL;
 
-    for (int i=0; i<100; i++)
+    for (int i=0; i<disk.get_num_records(); i++)
     {
         some_record = disk.get_record(i / 5, i % 5);
-        if (some_record == NULL)
-        {
-            cout << "Record " << i << " not found!" << endl;
-        }
-        else
-        {
-            cout << "Record " << i << " contains:" << endl;
-            cout << '\t' << some_record->tconst << '\t' << some_record->averageRating << '\t' << some_record->numVotes << endl;
+        if (some_record != NULL)
             b_plus_tree.insert(some_record->numVotes, some_record);
-        }
     }
-    b_plus_tree.print_tree();
+    b_plus_tree.print_info();
+
+    // Finding values
+    vector<record *> records;
+    int key;
+    
+    key = 500;
+    cout << "Searching with key: " << key << endl;
+    b_plus_tree.find(key, records);
+
+    for(record *r : records)
+    {
+        cout << '\t' << r->tconst << '\t' << r->averageRating << '\t' << r->numVotes << endl;
+    }
 
     return 0;
 }

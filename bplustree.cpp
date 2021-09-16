@@ -25,9 +25,9 @@ Node::~Node()
 
 BPlusTree::BPlusTree(int block_size)
 {
-    root = NULL;
     keys_per_node = (block_size - sizeof(void*)) / (sizeof(int) + sizeof(void*));
-    cout << "Keys per node: " << keys_per_node << endl;
+    num_nodes = 0;
+    root = NULL;
 }
 
 BPlusTree::~BPlusTree()
@@ -46,13 +46,13 @@ BPlusTree::~BPlusTree()
 
 void BPlusTree::insert(int key, record *r)
 {
-    cout << "Inserting id " << r->tconst << " with value " << r->numVotes << " with address " << r << endl;
     if (root == NULL)
     {
         root = new Node(keys_per_node, true);
         root->keys[0] = key;
         root->children[0] = r;
         root->size++;
+        num_nodes++;
 
         return;
     }
@@ -93,6 +93,7 @@ void BPlusTree::insert(int key, record *r)
     // Need to split
     else {
         Node *new_node = new Node(keys_per_node, true);
+        num_nodes++;
         
         // Fix rightmost pointer of each node
         new_node->children[keys_per_node] = ptr->children[keys_per_node];
@@ -148,6 +149,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         new_root->children[1] = new_child;
         root = new_root;
         new_root->size++;
+        num_nodes++;
 
         return;
     }
@@ -175,6 +177,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
     // Need to split
     else {
         Node *new_node = new Node(keys_per_node, false);
+        num_nodes++;
         
         // Find size of each node
         int left_node, right_node;
@@ -212,7 +215,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
             node->children[i+1] = new_child;
         }
 
-        insert_non_leaf(find_parent(node), new_node, find_smallest_key(new_node));
+        insert_non_leaf(find_parent(node), new_node, find_smallest(new_node)->keys[0]);
     }
 }
 
@@ -239,50 +242,94 @@ Node *BPlusTree::find_parent(Node *node)
     return parent;
 }
 
-int BPlusTree::find_smallest_key(Node *node)
+Node *BPlusTree::find_smallest(Node *node)
 {
-    if (node == NULL) return -1;
+    if (node == NULL) return NULL;
 
     Node *ptr;
 
     ptr = node;
     while (!ptr->is_leaf)
         ptr = (Node *)ptr->children[0];
-    return ptr->keys[0];
+    return ptr;
 }
 
-void BPlusTree::print_tree()
+int BPlusTree::get_height()
 {
-    if (root == NULL) return;
-    print_tree(root);
+    if (root == NULL) return 0;
+
+    Node *ptr;
+    int count;
+
+    ptr = root;
+    count = 1;
+
+    while (!ptr->is_leaf)
+    {
+        ptr = (Node *)ptr->children[0];
+        count++;
+    }
+    return count;
 }
 
-void BPlusTree::print_tree(Node *root)
+void BPlusTree::find(int key, vector<record *> &records)
 {
     if (root == NULL) return;
 
-    if (root->is_leaf)
-        cout << "LEAF" << endl;
+    Node *ptr;
+    int i;
 
-    cout << "Keys: ";
+    ptr = root;
+    while (!ptr->is_leaf)
+    {
+        for (i=0; i<ptr->size && key>ptr->keys[i]; i++);
+        if (key == ptr->keys[i])
+            ptr = (Node *)ptr->children[i+1];
+        else
+            ptr = (Node *)ptr->children[i];
+    }
+    for (i=0; i<ptr->size && key>ptr->keys[i]; i++);
+
+    while (ptr->keys[i] == key)
+    {
+        records.push_back((record *)ptr->children[i]);
+        i++;
+        if (i >= ptr->size){
+            ptr = (Node *)ptr->children[keys_per_node];
+            i = 0;
+        }
+    }
+}
+
+void BPlusTree::print_info()
+{
+    Node *ptr;
+
+    cout << "n (maximum keys per node): " << keys_per_node << endl;
+    cout << "Number of nodes: " << num_nodes << endl;
+    cout << "Height of tree: " << get_height() << endl;
+    
+    cout << "Contents of root:" << endl;
     for (int i=0; i<root->size; i++)
     {
         cout << '\t' << root->keys[i];
     }
     cout << endl;
 
-    cout << "Children: ";
-    for (int i=0; i<root->size; i++)
+    cout << "Contents of children:" << endl;
+    if (root->is_leaf)
     {
-        cout << '\t' << root->children[i];
+        cout << "NULL";
     }
-    cout << endl;
-
-    if (!root->is_leaf)
-    {
+    else {
         for (int i=0; i<=root->size; i++)
         {
-            print_tree((Node*)root->children[i]);
+            ptr = (Node *)root->children[i];
+            for (int j=0; j<ptr->size; j++)
+            {
+                cout << '\t' << ptr->keys[j];
+            }
+            cout << endl;
         }
     }
 }

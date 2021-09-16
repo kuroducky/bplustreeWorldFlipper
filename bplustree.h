@@ -1,6 +1,7 @@
 #ifndef BPLUSTREE_H
 #define BPLUSTREE_H
 
+#include <vector>
 #include "storage.h"
 
 class Node
@@ -20,19 +21,21 @@ class Node
 class BPlusTree
 {
     private:
-        int keys_per_node;
+        int keys_per_node, num_nodes;
         Node *root;
         
         void insert_non_leaf(Node *node, Node *child, int key);
         Node *find_parent(Node *node);
-        int find_smallest_key(Node *node);
+        Node *find_smallest(Node *node);
 
     public:
         BPlusTree(int block_size);
         ~BPlusTree();
+
         void insert(int key, record *r);
-        void print_tree();
-        void print_tree(Node *root);
+        int get_height();
+        void find(int key, std::vector<record *> &records);
+        void print_info();
 };
 
 #endif
