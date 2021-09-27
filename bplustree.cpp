@@ -124,64 +124,6 @@ void BPlusTree::insert(int key, record *r)
         ptr->size = keys_per_node + 1 - new_node->size;
         num_nodes++;
 
-        // int *virtualNode;
-        // record **virtualPtr;
-        
-        // virtualNode = new int[keys_per_node + 1];
-        // virtualPtr = new record*[keys_per_node + 2];
-
-        // for (int i = 0; i < keys_per_node; i++)
-        // {
-        //     virtualNode[i] = ptr->keys[i];
-        //     virtualPtr[i] = (record *)ptr->children[i];
-        // }
-        // virtualPtr[i] = (record *)ptr->children[i];
-
-        // int i = 0, j;
-
-        // // Traverse to find where the new
-        // // node is to be inserted
-        // while (key > virtualNode[i] && i < keys_per_node)
-        // {
-        //     i++;
-        // }
-
-        // // Update the current virtual
-        // // Node to its previous
-        // virtualPtr[keys_per_node+2] = virtualPtr[keys_per_node+1];
-        // for (int j = keys_per_node + 1; j > i; j--)
-        // {
-        //     virtualNode[j] = virtualNode[j - 1];
-        //     virtualPtr[j] = virtualPtr[j-1];
-        // }
-
-
-        // virtualNode[i] = key;
-        // virtualPtr[i] = r;
-
-        // ptr->size = (keys_per_node + 1) / 2;
-        // new_node->size = keys_per_node + 1 - (keys_per_node + 1) / 2;
-        // num_nodes++;
-
-        // new_node->children[keys_per_node] = ptr->children[keys_per_node];
-        // ptr->children[keys_per_node] = new_node;
-
-        // // Update the current virtual
-        // // Node's key to its previous
-        // for (i = 0; i < ptr->size; i++)
-        // {
-        //     ptr->keys[i] = virtualNode[i];
-        //     ptr->children[i] = virtualPtr[i];
-        // }
-
-        // // Update the newLeaf key to
-        // // virtual Node
-        // for (i = 0, j = new_node->size; i < new_node->size; i++, j++)
-        // {
-        //     new_node->keys[i] = virtualNode[j];
-        //     new_node->children[i] = virtualPtr[j];
-        // }
-
         // Find position to insert key
         bool inserted = false;
         for (i=keys_per_node-1, j=new_node->size-1; j>=0; i--, j--)
@@ -325,8 +267,7 @@ Node *BPlusTree::find_parent(Node *node)
             return NULL;
 
         parent = ptr;
-        for (i = 0; i < ptr->size && key >= ptr->keys[i]; i++)
-            ;
+        for (i = 0; i < ptr->size && key >= ptr->keys[i]; i++);
         ptr = (Node *)ptr->children[i];
     }
     return parent;
