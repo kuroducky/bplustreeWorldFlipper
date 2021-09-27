@@ -30,12 +30,12 @@ int main()
             b_plus_tree.insert(some_record->numVotes, some_record);
     }
     b_plus_tree.print_info();
-
+    
     // Finding values
     vector<record *> records;
     int key;
     
-    key = 500;
+    key = 1500000;
     cout << "Searching with key: " << key << endl;
     b_plus_tree.find(key, records);
 
@@ -43,6 +43,7 @@ int main()
     {
         cout << '\t' << r->tconst << '\t' << r->averageRating << '\t' << r->numVotes << endl;
     }
+    cout << "Num records: " << records.size() << endl;
 
     return 0;
 }

@@ -26,15 +26,14 @@ class BPlusTree
         
         void insert_non_leaf(Node *node, Node *child, int key);
         Node *find_parent(Node *node);
-        Node *find_smallest(Node *node);
 
     public:
         BPlusTree(int block_size);
         ~BPlusTree();
 
         void insert(int key, record *r);
-        int get_height();
         void find(int key, std::vector<record *> &records);
+        int get_height();
         void print_info();
 };
 

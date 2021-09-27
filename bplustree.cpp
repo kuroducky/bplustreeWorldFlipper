@@ -46,6 +46,7 @@ BPlusTree::~BPlusTree()
 
 void BPlusTree::insert(int key, record *r)
 {
+    // Creating new B+ tree
     if (root == NULL)
     {
         root = new Node(keys_per_node, true);
@@ -89,21 +90,20 @@ void BPlusTree::insert(int key, record *r)
         ptr->keys[i] = key;
         ptr->children[i] = r;
         ptr->size++;
+        num_nodes++;
     }
     // Need to split
     else {
         Node *new_node = new Node(keys_per_node, true);
-        num_nodes++;
         
         // Fix rightmost pointer of each node
         new_node->children[keys_per_node] = ptr->children[keys_per_node];
         ptr->children[keys_per_node] = new_node;
         
         // Find size of each node
-        int left_node, right_node;
-
         new_node->size = (keys_per_node + 1) / 2;
         ptr->size = keys_per_node - new_node->size;
+        num_nodes++;
 
         // Find position to insert key
         bool inserted = false;
@@ -149,7 +149,6 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         new_root->children[1] = new_child;
         root = new_root;
         new_root->size++;
-        num_nodes++;
 
         return;
     }
@@ -176,12 +175,9 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
     
     // Need to split
     else {
-        Node *new_node = new Node(keys_per_node, false);
-        num_nodes++;
+        Node *new_node = new Node(keys_per_node, false);\
         
         // Find size of each node
-        int left_node, right_node;
-
         new_node->size = keys_per_node / 2;
         node->size = keys_per_node - new_node->size;
 
@@ -203,19 +199,36 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         }
         new_node->children[0] = node->children[i+1];
 
-        if (!inserted)
+        // New key to be added to parent node
+        int new_key;
+        
+        if (inserted)
         {
-            // Inserting to old node
-            for (i=node->size-1; i>0 && key < node->keys[i-1]; i--)
+            new_key = node->keys[i];
+        }
+        else
+        {
+            if (key >= node->keys[i-1])
             {
-                node->keys[i] = node->keys[i-1];
-                node->children[i+1] = node->children[i];
+                new_key = key;
+                new_node->children[0] = new_child;
             }
-            node->keys[i] = key;
-            node->children[i+1] = new_child;
+            else
+            {
+                new_key = node->keys[i-1];
+
+                // Inserting to old node
+                for (i=node->size-1; i>0 && key < node->keys[i-1]; i--)
+                {
+                    node->keys[i] = node->keys[i-1];
+                    node->children[i+1] = node->children[i];
+                }
+                node->keys[i] = key;
+                node->children[i+1] = new_child;
+            }
         }
 
-        insert_non_leaf(find_parent(node), new_node, find_smallest(new_node)->keys[0]);
+        insert_non_leaf(find_parent(node), new_node, new_key);
     }
 }
 
@@ -242,16 +255,35 @@ Node *BPlusTree::find_parent(Node *node)
     return parent;
 }
 
-Node *BPlusTree::find_smallest(Node *node)
+void BPlusTree::find(int key, vector<record *> &records)
 {
-    if (node == NULL) return NULL;
+    if (root == NULL) return;
 
     Node *ptr;
+    int i;
 
-    ptr = node;
+    ptr = root;
     while (!ptr->is_leaf)
-        ptr = (Node *)ptr->children[0];
-    return ptr;
+    {
+        for (i=0; i<ptr->size && key>ptr->keys[i]; i++);
+        ptr = (Node *)ptr->children[i];
+    }
+    for (i=0; i<ptr->size && key>ptr->keys[i]; i++);
+    if (ptr->keys[i] != key && i == ptr->size)
+    {
+        ptr = (Node *)ptr->children[keys_per_node];
+        i == 0;
+    }
+
+    while (ptr) // && ptr->keys[i] == key)
+    {
+        records.push_back((record *)ptr->children[i]);
+        i++;
+        if (i >= ptr->size){
+            ptr = (Node *)ptr->children[keys_per_node];
+            i = 0;
+        }
+    }
 }
 
 int BPlusTree::get_height()
@@ -270,35 +302,6 @@ int BPlusTree::get_height()
         count++;
     }
     return count;
-}
-
-void BPlusTree::find(int key, vector<record *> &records)
-{
-    if (root == NULL) return;
-
-    Node *ptr;
-    int i;
-
-    ptr = root;
-    while (!ptr->is_leaf)
-    {
-        for (i=0; i<ptr->size && key>ptr->keys[i]; i++);
-        if (key == ptr->keys[i])
-            ptr = (Node *)ptr->children[i+1];
-        else
-            ptr = (Node *)ptr->children[i];
-    }
-    for (i=0; i<ptr->size && key>ptr->keys[i]; i++);
-
-    while (ptr->keys[i] == key)
-    {
-        records.push_back((record *)ptr->children[i]);
-        i++;
-        if (i >= ptr->size){
-            ptr = (Node *)ptr->children[keys_per_node];
-            i = 0;
-        }
-    }
 }
 
 void BPlusTree::print_info()
