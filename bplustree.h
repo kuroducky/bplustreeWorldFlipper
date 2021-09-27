@@ -11,9 +11,11 @@ class Node
         bool is_leaf;
         void **children;
 
-    protected:
+    public:
         Node(int max_nodes, bool is_leaf);
         ~Node();
+
+        void print_contents();
 
     friend class BPlusTree;
 };
@@ -32,7 +34,8 @@ class BPlusTree
         ~BPlusTree();
 
         void insert(int key, record *r);
-        void find(int key, std::vector<record *> &records);
+        void find(int key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks);
+        void find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks);
         int get_height();
         void print_info();
 };
