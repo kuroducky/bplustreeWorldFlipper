@@ -9,6 +9,8 @@
 using namespace std;
 
 void print_header(string header);
+void print_index_nodes(vector<Node *> index_nodes, int n);
+void print_record_blocks(vector<record *> records, Disk *disk, int n);
 float find_average(vector<record *> records);
 
 int main()
@@ -65,23 +67,10 @@ int main()
     b_plus_tree.find(key, records, index_nodes);
 
     // Print number and contents of index nodes
-    cout << "Number of index nodes: " << index_nodes.size() << endl;
-    cout << "Contents of index nodes:" << endl;
-    for(int i=0; i<5 && i<index_nodes.size(); i++)
-    {
-        index_nodes[i]->print_contents();
-    }
-    cout << endl;
+    print_index_nodes(index_nodes, 5);
 
     // Print number and contents of data blocks
-    cout << "Number of data blocks (includes duplicates): " << records.size() << endl;
-    cout << "Contents of data blocks:" << endl;
-    for(int i=0; i<5 && i<records.size(); i++)
-    {
-        block_index = records[i]->record_id / records_per_block;
-        disk.print_block(block_index);
-    }
-    cout << endl;
+    print_record_blocks(records, &disk, 5);
 
     // Find average of averageRating
     cout << "Average: " << setprecision(5) << find_average(records) << endl;
@@ -104,23 +93,10 @@ int main()
     b_plus_tree.find(start_key, end_key, records, index_nodes);
 
     // Print number and contents of index nodes
-    cout << "Number of index nodes: " << index_nodes.size() << endl;
-    cout << "Contents of index nodes:" << endl;
-    for(int i=0; i<5 && i<index_nodes.size(); i++)
-    {
-        index_nodes[i]->print_contents();
-    }
-    cout << endl;
+    print_index_nodes(index_nodes, 5);
 
     // Print number and contents of data blocks
-    cout << "Number of data blocks (includes duplicates): " << records.size() << endl;
-    cout << "Contents of data blocks:" << endl;
-    for(int i=0; i<5 && i<records.size(); i++)
-    {
-        block_index = records[i]->record_id / records_per_block;
-        disk.print_block(block_index);
-    }
-    cout << endl;
+    print_record_blocks(records, &disk, 5);
 
     // Find average of averageRating
     cout << "Average: " << setprecision(5) << find_average(records) << endl;
@@ -139,6 +115,44 @@ void print_header(string header)
     cout << endl << "=================================" << endl;
     cout << header << endl;
     cout << "=================================" << endl;
+}
+
+void print_index_nodes(vector<Node *> index_nodes, int n)
+{
+    cout << "Number of index nodes: " << index_nodes.size() << endl;
+    cout << "Contents of index nodes:" << endl;
+    for(int i=0; i<n && i<index_nodes.size(); i++)
+    {
+        index_nodes[i]->print_contents();
+    }
+    cout << endl;
+}
+
+void print_record_blocks(vector<record *> records, Disk *disk, int n)
+{
+    int block_index, prev_index, records_per_block, count;
+
+    records_per_block = disk->get_records_per_block();
+
+    cout << "Number of data blocks (including duplicates): " << records.size() << endl;
+
+    prev_index = -1;
+    count = 0;
+    for(int i=0; i<records.size(); i++)
+    {
+        block_index = records[i]->record_id / records_per_block;
+        if (block_index != prev_index)
+            count++;
+    }
+    cout << "Number of data blocks (not including duplicates): " << count << endl;
+
+    cout << "Contents of data blocks:" << endl;
+    for(int i=0; i<n && i<records.size(); i++)
+    {
+        block_index = records[i]->record_id / records_per_block;
+        disk->print_block(block_index);
+    }
+    cout << endl;
 }
 
 float find_average(vector<record *> records)

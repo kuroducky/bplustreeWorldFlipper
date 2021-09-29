@@ -102,7 +102,6 @@ void BPlusTree::insert(int key, record *r)
         ptr->keys[i] = key;
         ptr->children[i] = r;
         ptr->size++;
-        num_nodes++;
     }
     // Need to split
     else
@@ -161,6 +160,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         new_root->children[1] = new_child;
         root = new_root;
         new_root->size++;
+        num_nodes++;
 
         return;
     }
@@ -197,6 +197,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         // Find size of each node
         new_node->size = keys_per_node / 2;
         node->size = keys_per_node - new_node->size;
+        num_nodes++;
 
         // Find position to insert key
         bool inserted = false;
