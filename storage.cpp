@@ -116,11 +116,16 @@ void Disk::import_tsv(string filename)
     // Ignore headers
     getline(myFile, line);
 
+    int record_id = 0;
     while (getline(myFile, line))
     {
         stringstream ss(line);
         record tmp_record;
         string tmp;
+
+        // // Get record id
+        // tmp_record.record_id = record_id;
+        // record_id++;
 
         // Get tconst
         getline(ss, tmp, '\t');

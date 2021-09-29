@@ -30,12 +30,6 @@ void Node::print_contents()
     {
         cout << keys[i] << " ";
     }
-
-    cout << endl << "Pointers: ";
-    for (int i=0; i<=size; i++)
-    {
-        cout << children[i] << " ";
-    }
     cout << endl;
 }
 

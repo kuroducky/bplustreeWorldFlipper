@@ -6,6 +6,7 @@
 
 struct record
 {
+    // int record_id;
     char tconst[9];
     float averageRating;
     unsigned int numVotes;
