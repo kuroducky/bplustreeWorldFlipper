@@ -61,6 +61,7 @@ int BPlusTree::remove(int key)
 {
     int total_count = 0;
     int count = 0;
+
     // if B+ tree is non-existent, nothing can be deleted
     if (root == NULL)
     {
@@ -129,11 +130,11 @@ int BPlusTree::remove(int key)
         if (!found)
         {
             cout << "Key not found" << endl;
-            return total_count;
+            return -1;
         }
 
         //Performing deletion
-        cout << "Deleting node " << ((record *)ptr->children[pos])->tconst << endl;
+        cout << "Deleting record " << ((record *)ptr->children[pos])->tconst << endl;
         for (int i = pos; i < ptr->size - 1; i++)
         {
             ptr->keys[i] = ptr->keys[i + 1];
@@ -141,14 +142,11 @@ int BPlusTree::remove(int key)
         }
         ptr->size--;
 
-        //Increasing deletion count
-        total_count++;
-
         //Ensure that there is no underflow ie, root node must have at least 1 value and
         //all other nodes must have at least (m-1)/2 values
         if (ptr->size >= (ptr->max_nodes + 1) / 2) //no underflow
         {
-            return total_count;
+            return 0;
         }
         cout << "Underflow in leaf node" << endl;
 
@@ -177,7 +175,7 @@ int BPlusTree::remove(int key)
                 //update parent
                 parent->keys[leftSibling] = ptr->keys[0];
                 cout << "Transferred " << ptr->keys[0] << " from left sibling of leaf node\n";
-                return total_count;
+                return 0;
             }
         }
 
@@ -205,7 +203,7 @@ int BPlusTree::remove(int key)
                 //update parent
                 parent->keys[rightSibling - 1] = rightNode->keys[0];
                 cout << "Transferred " << ptr->keys[ptr->size - 1] << " from right sibling of leaf node\n";
-                return total_count;
+                return 0;
             }
         }
 
@@ -221,7 +219,8 @@ int BPlusTree::remove(int key)
             }
             leftNode->size += ptr->size;
             leftNode->children[keys_per_node] = ptr->children[keys_per_node];
-            cout << "Merging two leaf nodes\n";
+            cout << "Merging two leaf nodes" << endl;
+            total_count++;
             count = remove_non_leaf(parent->keys[leftSibling], parent, ptr, count); // delete parent node key
             delete ptr;
         }
@@ -237,6 +236,7 @@ int BPlusTree::remove(int key)
             ptr->size += rightNode->size;
             ptr->children[keys_per_node] = rightNode->children[keys_per_node];
             cout << "Merging two leaf nodes\n";
+            total_count++;
             count = remove_non_leaf(parent->keys[rightSibling - 1], parent, rightNode, count); // delete parent node key
             delete rightNode;
         }
@@ -258,6 +258,7 @@ int BPlusTree::remove_non_leaf(int key, Node *parent, Node *child, int count)
                 root = (Node *)parent->children[0];
                 delete parent;
                 cout << "Changed root node\n";
+                count += 2;
                 return count;
             }
             else if (parent->children[0] == child)
@@ -266,6 +267,7 @@ int BPlusTree::remove_non_leaf(int key, Node *parent, Node *child, int count)
                 root = (Node *)parent->children[1];
                 delete parent;
                 cout << "Changed root node\n";
+                count += 2;
                 return count;
             }
         }
@@ -290,18 +292,17 @@ int BPlusTree::remove_non_leaf(int key, Node *parent, Node *child, int count)
             break;
         }
     }
-    for (int i = pos; i < parent->size; i++)
+    for (int i = pos; i < parent->size + 1; i++)
     {
         parent->children[i] = parent->children[i + 1];
     }
     parent->size--;
     if (parent->size >= (parent->max_nodes + 1) / 2 - 1) //no underflow
     {
-        cout << "Deleted " << key << " from internal node successfully\n";
-        count++;
+        cout << "Deleted " << key << " from internal node successfully" << endl;
         return count;
     }
-    cout << "Underflow in internal node!\n";
+    cout << "Underflow in internal node!" << endl;
     //underflow, try to transfer first
     if (parent == root)
         return count;
@@ -364,7 +365,7 @@ int BPlusTree::remove_non_leaf(int key, Node *parent, Node *child, int count)
             //transfer first pointer from rightnode to cursor
             //transfer ptr
             parent->children[parent->size + 1] = rightNode->children[0];
-            for (int i = 0; i < rightNode->size; ++i)
+            for (int i = 0; i < rightNode->size - 1; ++i)
             {
                 rightNode->children[i] = rightNode->children[i + 1];
             }

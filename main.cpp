@@ -113,7 +113,7 @@ int main()
     {
         int count = b_plus_tree.remove(1000);
         total_count += count;
-        if (count == 0)
+        if (count == -1)
         {
             exist = false;
         }
