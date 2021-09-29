@@ -34,8 +34,8 @@ class BPlusTree
         ~BPlusTree();
 
         void insert(int key, record *r);
-        void find(int key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks);
-        void find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks);
+        void find(int key, std::vector<record *> &records, std::vector<Node *> &index_nodes);
+        void find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes);
         int get_height();
         void print_info();
 };
