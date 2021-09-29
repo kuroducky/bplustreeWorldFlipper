@@ -16,10 +16,10 @@ For Mac, it should probably be installed already
 
 For Windows, run
 ```
-.\bin\main.exe
+$ .\bin\main.exe
 ```
 
 For Mac, run
 ```
-./bin/main
+$ ./bin/main
 ```
