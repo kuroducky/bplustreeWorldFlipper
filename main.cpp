@@ -21,7 +21,7 @@ int main()
 
     // Pack records into a block, and store it in a disk
     Disk disk(block_size);
-    disk.import_tsv("data.tsv");
+    disk.import_tsv("/Users/darren/Desktop/NTU/gitProjects/jenBPlusTree/bplustreeWorldFlipper/data.tsv");
     disk.print_records();
 
     /**
@@ -34,17 +34,17 @@ int main()
     BPlusTree b_plus_tree(block_size);
     record *some_record;
     bool found;
-    
+
     some_record = NULL;
 
-    for (int i=0; i<disk.get_num_records(); i++)
+    for (int i = 0; i < disk.get_num_records(); i++)
     {
         some_record = disk.get_record(i / 5, i % 5);
         if (some_record != NULL)
             b_plus_tree.insert(some_record->numVotes, some_record);
     }
     b_plus_tree.print_info();
-    
+
     /**
      * Experiment 3
      * Finding values in a B+ tree
@@ -57,7 +57,7 @@ int main()
     vector<block *> record_blocks;
 
     int key;
-    
+
     key = 500;
     cout << "Searching with key: " << key << endl;
     b_plus_tree.find(key, records, index_nodes, record_blocks);
@@ -66,8 +66,8 @@ int main()
     // {
     //     cout << '\t' << r->tconst << '\t' << r->averageRating << '\t' << r->numVotes << endl;
     // }
-    
-    for(int i=0; i<5 && i<index_nodes.size(); i++)
+
+    for (int i = 0; i < 5 && i < index_nodes.size(); i++)
     {
         index_nodes[i]->print_contents();
     }
@@ -81,11 +81,11 @@ int main()
 
     // Finding values
     int start_key, end_key;
-    
+
     records.clear();
     index_nodes.clear();
     record_blocks.clear();
-    
+
     start_key = 30000;
     end_key = 40000;
     cout << "Searching with start key: " << start_key << " and end key: " << end_key << endl;
@@ -96,7 +96,7 @@ int main()
     //     cout << '\t' << r->tconst << '\t' << r->averageRating << '\t' << r->numVotes << endl;
     // }
 
-    for(int i=0; i<5 && i<index_nodes.size(); i++)
+    for (int i = 0; i < 5 && i < index_nodes.size(); i++)
     {
         index_nodes[i]->print_contents();
     }
@@ -107,13 +107,27 @@ int main()
      * Deleting values in a B+ tree
      */
     print_header("EXPERIMENT 5");
+    bool exist = true;
+    int total_count = 0;
+    while (exist)
+    {
+        int count = b_plus_tree.remove(1000);
+        total_count += count;
+        if (count == 0)
+        {
+            exist = false;
+        }
+    }
+    cout << "Total number of times node was deleted or merged: " << total_count << endl;
+    b_plus_tree.print_info();
 
     return 0;
 }
 
 void print_header(string header)
 {
-    cout << endl << "=================================" << endl;
+    cout << endl
+         << "=================================" << endl;
     cout << header << endl;
     cout << "=================================" << endl;
 }
