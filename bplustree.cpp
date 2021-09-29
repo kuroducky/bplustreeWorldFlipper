@@ -166,19 +166,19 @@ int BPlusTree::remove(int key)
                     ptr->keys[i] = ptr->keys[i - 1];
                     ptr->children[i] = ptr->children[i - 1];
                 }
+                //shift pointer to next leaf
+                ptr->size++;
+
+                //transfer
+                ptr->keys[0] = leftNode->keys[leftNode->size - 1];
+                ptr->children[0] = leftNode->children[leftNode->size - 1];
+                leftNode->size--;
+
+                //update parent
+                parent->keys[leftSibling] = ptr->keys[0];
+                cout << "Transferred " << ptr->keys[0] << " from left sibling of leaf node\n";
+                return total_count;
             }
-            //shift pointer to next leaf
-            ptr->size++;
-
-            //transfer
-            ptr->keys[0] = leftNode->keys[leftNode->size - 1];
-            ptr->children[0] = leftNode->children[leftNode->size - 1];
-            leftNode->size--;
-
-            //update parent
-            parent->keys[leftSibling] = ptr->keys[0];
-            cout << "Transferred " << ptr->keys[0] << " from left sibling of leaf node\n";
-            return total_count;
         }
 
         if (rightSibling <= parent->size) //check if right sibling exist
@@ -305,10 +305,11 @@ int BPlusTree::remove_non_leaf(int key, Node *parent, Node *child, int count)
     //underflow, try to transfer first
     if (parent == root)
         return count;
+
     Node *mother = find_parent(parent);
     int leftSibling, rightSibling;
     //finding left n right sibling of cursor
-    for (pos = 0; pos < parent->size + 1; pos++)
+    for (pos = 0; pos < mother->size + 1; pos++)
     {
         if (mother->children[pos] == parent)
         {
@@ -334,6 +335,7 @@ int BPlusTree::remove_non_leaf(int key, Node *parent, Node *child, int count)
             mother->keys[leftSibling] = leftNode->keys[leftNode->size - 1];
             //transfer last pointer from leftnode to cursor
             //make space for transfer of ptr
+
             for (int i = parent->size + 1; i > 0; i--)
             {
                 parent->children[i] = parent->children[i - 1];
