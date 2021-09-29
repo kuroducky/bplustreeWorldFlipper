@@ -21,7 +21,7 @@ int main()
 
     // Pack records into a block, and store it in a disk
     Disk disk(block_size);
-    disk.import_tsv("/Users/darren/Desktop/NTU/gitProjects/jenBPlusTree/bplustreeWorldFlipper/data.tsv");
+    disk.import_tsv("data.tsv");
     disk.print_records();
 
     /**
@@ -112,11 +112,11 @@ int main()
     while (exist)
     {
         int count = b_plus_tree.remove(1000);
-        total_count += count;
         if (count == -1)
         {
             exist = false;
         }
+        total_count += count;
     }
     cout << "Total number of times node was deleted or merged: " << total_count << endl;
     b_plus_tree.print_info();
