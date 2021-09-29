@@ -267,12 +267,12 @@ Node *BPlusTree::find_parent(Node *node)
     return parent;
 }
 
-void BPlusTree::find(int key, vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks)
+void BPlusTree::find(int key, vector<record *> &records, std::vector<Node *> &index_nodes)
 {
-    find(key, key, records, index_nodes, record_blocks);
+    find(key, key, records, index_nodes);
 }
 
-void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks)
+void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes)
 {
     if (root == NULL)
         return;
@@ -296,7 +296,7 @@ void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records,
     if (ptr->keys[i] != start_key && i == ptr->size)
     {
         ptr = (Node *)ptr->children[keys_per_node];
-        i == 0;
+        i = 0;
     }
 
     // Retrieving data from start key to end key

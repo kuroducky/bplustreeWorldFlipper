@@ -62,6 +62,11 @@ int Disk::get_num_records()
     return num_records;
 }
 
+int Disk::get_records_per_block()
+{
+    return records_per_block;
+}
+
 record *Disk::get_record(int block_index, int record_index)
 {
     if (block_index * records_per_block + record_index > num_records)
@@ -100,6 +105,18 @@ void Disk::print_records(int n)
     }
 }
 
+void Disk::print_block(int n)
+{
+    record *ptr;
+
+    cout << "Block " << n << endl;
+    for (int i=0; i<records_per_block; i++)
+    {
+        ptr = blocks[n].records;
+        cout << '\t' << ptr[i].tconst << '\t' << ptr[i].numVotes << endl;
+    }
+}
+
 // Import tsv
 void Disk::import_tsv(string filename)
 {
@@ -112,20 +129,20 @@ void Disk::import_tsv(string filename)
     }
 
     string line;
+    int record_id = 0;
 
     // Ignore headers
     getline(myFile, line);
 
-    int record_id = 0;
     while (getline(myFile, line))
     {
         stringstream ss(line);
         record tmp_record;
         string tmp;
 
-        // // Get record id
-        // tmp_record.record_id = record_id;
-        // record_id++;
+        // Get record id
+        tmp_record.record_id = record_id;
+        record_id++;
 
         // Get tconst
         getline(ss, tmp, '\t');
@@ -140,7 +157,7 @@ void Disk::import_tsv(string filename)
         tmp_record.numVotes = atoi(tmp.c_str());
 
         // Append to result
-        Disk::insert(tmp_record);
+        insert(tmp_record);
     }
     
     myFile.close();
