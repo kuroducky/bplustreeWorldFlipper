@@ -39,7 +39,7 @@ int main()
     record *some_record;
     int records_per_block;
     bool found;
-    
+
     some_record = NULL;
     records_per_block = disk.get_records_per_block();
     for (int i=0; i<disk.get_num_records(); i++)
@@ -49,7 +49,7 @@ int main()
             b_plus_tree.insert(some_record->numVotes, some_record);
     }
     b_plus_tree.print_info();
-    
+
     /**
      * Experiment 3
      * Finding values in a B+ tree
@@ -83,7 +83,7 @@ int main()
 
     // Finding values
     int start_key, end_key;
-    
+
     records.clear();
     index_nodes.clear();
     
@@ -106,13 +106,29 @@ int main()
      * Deleting values in a B+ tree
      */
     print_header("EXPERIMENT 5");
+    int delete_key, total_count, count;
+
+    delete_key = 1000;
+
+    cout << "Deleting key: " << delete_key << endl;
+    
+    total_count = 0;
+    count = 0;
+    while (count != -1)
+    {
+        total_count += count;
+        count = b_plus_tree.remove(delete_key);
+    }
+    cout << "Total number of times node was deleted or merged: " << total_count << endl;
+    b_plus_tree.print_info();
 
     return 0;
 }
 
 void print_header(string header)
 {
-    cout << endl << "=================================" << endl;
+    cout << endl
+         << "=================================" << endl;
     cout << header << endl;
     cout << "=================================" << endl;
 }
