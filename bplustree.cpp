@@ -104,7 +104,6 @@ void BPlusTree::insert(int key, record *r)
         ptr->keys[i] = key;
         ptr->children[i] = r;
         ptr->size++;
-        num_nodes++;
     }
     // Need to split
     else
@@ -164,6 +163,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         new_root->children[1] = new_child;
         root = new_root;
         new_root->size++;
+        num_nodes++;
 
         return;
     }
@@ -201,6 +201,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
         // Find size of each node
         new_node->size = keys_per_node / 2;
         node->size = keys_per_node - new_node->size;
+        num_nodes++;
 
         // Find position to insert key
         bool inserted = false;
@@ -390,7 +391,7 @@ int BPlusTree::remove(int key)
         }
         leftNode->size += ptr->size;
         leftNode->children[keys_per_node] = ptr->children[keys_per_node];
-        count += remove_non_leaf(parent->keys[leftSibling], parent, ptr); // delete parent node key
+        count += remove_non_leaf(parent, ptr, parent->keys[leftSibling]); // delete parent node key
         delete ptr;
         count++;
         num_nodes--;
@@ -406,7 +407,7 @@ int BPlusTree::remove(int key)
         }
         ptr->size += rightNode->size;
         ptr->children[keys_per_node] = rightNode->children[keys_per_node];
-        count += remove_non_leaf(parent->keys[pos], parent, rightNode); // delete parent node key
+        count += remove_non_leaf(parent, rightNode, parent->keys[pos]); // delete parent node key
         delete rightNode;
         count++;
         num_nodes--;
@@ -414,29 +415,29 @@ int BPlusTree::remove(int key)
     return count;
 }
 
-int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
+int BPlusTree::remove_non_leaf(Node *node, Node *child, int key)
 {
     int count = 0;
     
     //deleting the key x first
     //checking if key from root is to be deleted
-    if (curr == root)
+    if (node == root)
     {
-        if (curr->size == 1) //if only one key is left, change root
+        if (node->size == 1) //if only one key is left, change root
         {
-            if (curr->children[1] == child)
+            if (node->children[1] == child)
             {
                 delete child;
-                root = (Node *)curr->children[0];
-                delete curr;
+                root = (Node *)node->children[0];
+                delete node;
                 count += 2;
                 return count;
             }
-            else if (curr->children[0] == child)
+            else if (node->children[0] == child)
             {
                 delete child;
-                root = (Node *)curr->children[1];
-                delete curr;
+                root = (Node *)node->children[1];
+                delete node;
                 count += 2;
                 return count;
             }
@@ -445,25 +446,25 @@ int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
 
     int pos, i, j;
 
-    for (pos=0; pos < curr->size && curr->children[pos+1] != child; pos++);
-    for (i = pos; i < curr->size - 1; i++)
+    for (pos=0; pos < node->size && node->children[pos+1] != child; pos++);
+    for (i = pos; i < node->size - 1; i++)
     {
-        curr->keys[i] = curr->keys[i + 1];
-        curr->children[i+1] = curr->children[i + 2];
+        node->keys[i] = node->keys[i + 1];
+        node->children[i+1] = node->children[i + 2];
     }
-    curr->size--;
+    node->size--;
     
-    if (curr->size >= (keys_per_node + 1) / 2 - 1 || curr == root) //no underflow or node is root
+    if (node->size >= (keys_per_node + 1) / 2 - 1 || node == root) //no underflow or node is root
     {
         return count;
     }
 
     //underflow, try to transfer first
-    Node *parent = find_parent(curr);
+    Node *parent = find_parent(node);
     int leftSibling, rightSibling;
 
     //finding left n right sibling of cursor
-    for (pos = 0; pos < parent->size && parent->children[pos] != curr; pos++);
+    for (pos = 0; pos < parent->size && parent->children[pos] != node; pos++);
     leftSibling = pos - 1;
     rightSibling = pos + 1;
 
@@ -475,21 +476,21 @@ int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
         if (leftNode->size >= keys_per_node / 2 + 1)
         {
             //make space for transfer of key
-            curr->children[curr->size+1] = curr->children[curr->size];
-            for (i = curr->size; i > 0; i--)
+            node->children[node->size+1] = node->children[node->size];
+            for (i = node->size; i > 0; i--)
             {
-                curr->keys[i] = curr->keys[i - 1];
-                curr->children[i] = curr->children[i - 1];
+                node->keys[i] = node->keys[i - 1];
+                node->children[i] = node->children[i - 1];
             }
 
             //transfer key from left sibling through parent
-            curr->keys[0] = parent->keys[leftSibling];
+            node->keys[0] = parent->keys[leftSibling];
             parent->keys[leftSibling] = leftNode->keys[leftNode->size - 1];
 
             //transfer ptr
-            curr->children[0] = leftNode->children[leftNode->size];
+            node->children[0] = leftNode->children[leftNode->size];
 
-            curr->size++;
+            node->size++;
             leftNode->size--;
             return count;
         }
@@ -501,11 +502,11 @@ int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
         if (rightNode->size >= keys_per_node / 2 + 1)
         {
             //transfer key from right sibling through parent
-            curr->keys[curr->size] = parent->keys[pos];
+            node->keys[node->size] = parent->keys[pos];
             parent->keys[pos] = rightNode->keys[0];
             
             //transfer first pointer from rightnode to cursor
-            curr->children[curr->size + 1] = rightNode->children[0];
+            node->children[node->size + 1] = rightNode->children[0];
 
             //transfer keys
             for (i = 0; i < rightNode->size - 1; i++)
@@ -515,7 +516,7 @@ int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
             }
             rightNode->children[i] = rightNode->children[i + 1];
 
-            curr->size++;
+            node->size++;
             rightNode->size--;
             return count;
         }
@@ -527,17 +528,17 @@ int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
         Node *leftNode = (Node *)parent->children[leftSibling];
 
         leftNode->keys[leftNode->size] = parent->keys[leftSibling];
-        for (i = leftNode->size + 1, j = 0; j < curr->size; j++)
+        for (i = leftNode->size + 1, j = 0; j < node->size; j++)
         {
-            leftNode->keys[i] = curr->keys[j];
-            leftNode->children[i] = curr->children[j];
+            leftNode->keys[i] = node->keys[j];
+            leftNode->children[i] = node->children[j];
         }
         
-        leftNode->size += curr->size + 1;
-        curr->size = 0;
+        leftNode->size += node->size + 1;
+        node->size = 0;
         //delete cursor
-        count = remove_non_leaf(parent->keys[leftSibling], parent, curr);
-        delete curr;
+        count = remove_non_leaf(parent, node, parent->keys[leftSibling]);
+        delete node;
         count++;
         num_nodes--;
     }
@@ -545,17 +546,17 @@ int BPlusTree::remove_non_leaf(int key, Node *curr, Node *child)
     {
         //cursor + parent key + rightnode
         Node *rightNode = (Node *)parent->children[rightSibling];
-        curr->keys[curr->size] = parent->keys[rightSibling - 1];
-        for (i = curr->size + 1, j = 0; j < rightNode->size; j++)
+        node->keys[node->size] = parent->keys[rightSibling - 1];
+        for (i = node->size + 1, j = 0; j < rightNode->size; j++)
         {
-            curr->keys[i] = rightNode->keys[j];
-            curr->children[i] = rightNode->children[j];
+            node->keys[i] = rightNode->keys[j];
+            node->children[i] = rightNode->children[j];
         }
         
-        curr->size += rightNode->size + 1;
+        node->size += rightNode->size + 1;
         rightNode->size = 0;
         //delete cursor
-        count = remove_non_leaf(parent->keys[rightSibling - 1], parent, rightNode);
+        count = remove_non_leaf(parent, rightNode, parent->keys[rightSibling - 1]);
         delete rightNode;
         count++;
         num_nodes--;
@@ -588,12 +589,12 @@ Node *BPlusTree::find_parent(Node *node)
     return parent;
 }
 
-void BPlusTree::find(int key, vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks)
+void BPlusTree::find(int key, vector<record *> &records, std::vector<Node *> &index_nodes)
 {
-    find(key, key, records, index_nodes, record_blocks);
+    find(key, key, records, index_nodes);
 }
 
-void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks)
+void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes)
 {
     if (root == NULL)
         return;

@@ -6,10 +6,10 @@
 
 struct record
 {
-    // int record_id;
+    int record_id;
     char tconst[9];
     float averageRating;
-    unsigned int numVotes;
+    int numVotes;
 };
 
 struct block
@@ -36,9 +36,11 @@ class Disk
         // Methods
         void insert(record r);
         int get_num_records();
+        int get_records_per_block();
         record *get_record(int block_index, int record_index);
         void print_records();
         void print_records(int n);
+        void print_block(int n);
         void import_tsv(std::string filename);
 };
 

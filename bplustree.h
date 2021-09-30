@@ -27,7 +27,7 @@ private:
     Node *root;
 
     void insert_non_leaf(Node *node, Node *child, int key);
-    int remove_non_leaf(int key, Node *parent, Node *child);
+    int remove_non_leaf(Node *node, Node *child, int key);
     Node *find_parent(Node *node);
 
 public:
@@ -36,8 +36,8 @@ public:
 
     void insert(int key, record *r);
     int remove(int key);
-    void find(int key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks);
-    void find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes, std::vector<block *> &record_blocks);
+    void find(int key, std::vector<record *> &records, std::vector<Node *> &index_nodes);
+    void find(int start_key, int end_key, std::vector<record *> &records, std::vector<Node *> &index_nodes);
     int get_height();
     void print_info();
 };
