@@ -39,7 +39,6 @@ class Disk
         int get_records_per_block();
         record *get_record(int block_index, int record_index);
         void print_info();
-        // void print_records(int n);
         void print_block(int n);
         void import_tsv(std::string filename);
 };

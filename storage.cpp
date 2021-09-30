@@ -89,12 +89,13 @@ void Disk::print_block(int n)
 {
     record *ptr;
 
-    cout << "\tBlock " << n << endl;
+    cout << "\tBlock " << n << ": \t";
     for (int i=0; i<records_per_block; i++)
     {
         ptr = blocks[n].records;
-        cout << "\t\t" << ptr[i].tconst << '\t' << ptr[i].numVotes << endl;
+        cout << " " << ptr[i].tconst;
     }
+    cout << endl;
 }
 
 // Import tsv

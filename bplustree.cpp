@@ -605,8 +605,7 @@ void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records,
     {
         // Record non-leaf index nodes
         index_nodes.push_back(ptr);
-        for (i = 0; i < ptr->size && start_key > ptr->keys[i]; i++)
-            ;
+        for (i = 0; i < ptr->size && start_key > ptr->keys[i]; i++);
         ptr = (Node *)ptr->children[i];
     }
     // Record leaf index node
