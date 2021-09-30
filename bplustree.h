@@ -7,7 +7,7 @@
 class Node
 {
 private:
-    int *keys, size, max_nodes;
+    int *keys, size;
     bool is_leaf;
     void **children;
 
@@ -27,7 +27,7 @@ private:
     Node *root;
 
     void insert_non_leaf(Node *node, Node *child, int key);
-    int remove_non_leaf(int key, Node *parent, Node *child, int count);
+    int remove_non_leaf(int key, Node *parent, Node *child);
     Node *find_parent(Node *node);
 
 public:

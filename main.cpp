@@ -58,7 +58,7 @@ int main()
 
     int key;
 
-    key = 500;
+    key = 1000;
     cout << "Searching with key: " << key << endl;
     b_plus_tree.find(key, records, index_nodes, record_blocks);
 
@@ -107,16 +107,18 @@ int main()
      * Deleting values in a B+ tree
      */
     print_header("EXPERIMENT 5");
-    bool exist = true;
-    int total_count = 0;
-    while (exist)
+    int delete_key, total_count, count;
+
+    delete_key = 1000;
+
+    cout << "Deleting key: " << delete_key << endl;
+    
+    total_count = 0;
+    count = 0;
+    while (count != -1)
     {
-        int count = b_plus_tree.remove(1000);
-        if (count == -1)
-        {
-            exist = false;
-        }
         total_count += count;
+        count = b_plus_tree.remove(delete_key);
     }
     cout << "Total number of times node was deleted or merged: " << total_count << endl;
     b_plus_tree.print_info();
