@@ -403,11 +403,11 @@ int BPlusTree::remove(int key)
         for (i = ptr->size, j = 0; j < rightNode->size; i++, j++)
         {
             ptr->keys[i] = rightNode->keys[j];
-            ptr->children[i] = ptr->children[j];
+            ptr->children[i] = rightNode->children[j];
         }
         ptr->size += rightNode->size;
         ptr->children[keys_per_node] = rightNode->children[keys_per_node];
-        count += remove_non_leaf(parent, rightNode, parent->keys[pos]); // delete parent node key
+        count += remove_non_leaf(parent, rightNode, parent->keys[rightSibling - 1]); // delete parent node key
         delete rightNode;
         count++;
         num_nodes--;
