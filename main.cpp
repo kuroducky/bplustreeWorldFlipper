@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include "storage.h"
 #include "bplustree.h"
@@ -13,15 +14,28 @@ void print_index_nodes(vector<Node *> index_nodes, int n);
 void print_record_blocks(vector<record *> records, Disk *disk, int n);
 float find_average(vector<record *> records);
 
-int main()
+int main(int argc, char **argv)
 {
+    int block_size, default_size = 100;
+
+    // Trying to get block size from command line argument
+    block_size = default_size;
+    if (argc >= 2)
+    {
+        istringstream iss( argv[1] );
+
+        if (!(iss >> block_size) || !iss.eof()) // Check eofbit
+        {
+            // Conversion failed
+            block_size = default_size; // Default block size
+        }
+    }
+
     /**
      * Experiment 1
      * Storing data into blocks
      */
     print_header("EXPERIMENT 1");
-
-    int block_size = 100;
 
     // Pack records into a block, and store it in a disk
     Disk disk(block_size);
@@ -139,7 +153,6 @@ void print_index_nodes(vector<Node *> index_nodes, int n)
     cout << "Contents of index nodes:" << endl;
     for(int i=0; i<n && i<index_nodes.size(); i++)
     {
-        cout << '\t';
         index_nodes[i]->print_contents();
     }
     cout << endl;

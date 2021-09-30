@@ -86,6 +86,7 @@ record *Disk::get_record(int block_index, int record_index)
 
 void Disk::print_info()
 {
+    cout << "Block size: \t\t" << block_size  << " bytes" << endl;
     cout << "Number of blocks: \t" << blocks.size() << " blocks" << endl;
     cout << "Size of database: \t" << setprecision(3) << num_records * sizeof(record) / pow(2, 20) << " MB" << endl;
 }
@@ -93,14 +94,15 @@ void Disk::print_info()
 void Disk::print_block(int n)
 {
     record *ptr;
+    int i;
 
     cout << "\tBlock " << n << ": \t";
-    for (int i=0; i<records_per_block; i++)
+    for (i=0; i<records_per_block-1; i++)
     {
         ptr = blocks[n].records;
-        cout << " " << ptr[i].tconst;
+        cout << ptr[i].tconst << ", ";
     }
-    cout << endl;
+    cout << ptr[i].tconst << endl;
 }
 
 // Import tsv

@@ -25,12 +25,14 @@ Node::~Node()
 
 void Node::print_contents()
 {
-    cout << "Keys: ";
-    for (int i = 0; i < size; i++)
+    int i;
+
+    cout << "\tKeys: ";
+    for (i = 0; i < size - 1; i++)
     {
-        cout << keys[i] << " ";
+        cout << keys[i] << ", ";
     }
-    cout << endl;
+    cout << keys[i] << endl;
 }
 
 BPlusTree::BPlusTree(int block_size)
@@ -275,7 +277,7 @@ int BPlusTree::remove(int key)
     //Once we reached the leaf nodes, we search for the key if it exists
     bool found = false;
     int pos;
-
+    
     for (pos = 0; pos < ptr->size; pos++)
     {
         if (ptr->keys[pos] == key)
@@ -608,12 +610,9 @@ void BPlusTree::find(int start_key, int end_key, std::vector<record *> &records,
         for (i = 0; i < ptr->size && start_key > ptr->keys[i]; i++);
         ptr = (Node *)ptr->children[i];
     }
-    // Record leaf index node
-    index_nodes.push_back(ptr);
 
     // Finding starting key
-    for (i = 0; i < ptr->size && start_key > ptr->keys[i]; i++)
-        ;
+    for (i = 0; i < ptr->size && start_key > ptr->keys[i]; i++);
     if (ptr->keys[i] != start_key && i == ptr->size)
     {
         ptr = (Node *)ptr->children[keys_per_node];
@@ -661,11 +660,7 @@ void BPlusTree::print_info()
     cout << "Height of tree: " << get_height() << endl;
 
     cout << "Contents of root:" << endl;
-    for (int i = 0; i < root->size; i++)
-    {
-        cout << '\t' << root->keys[i];
-    }
-    cout << endl;
+    root->print_contents();
 
     cout << "Contents of first child:" << endl;
     if (root->is_leaf)
@@ -676,10 +671,6 @@ void BPlusTree::print_info()
     {
         
         ptr = (Node *)root->children[0];
-        for (int j = 0; j < ptr->size; j++)
-        {
-            cout << '\t' << ptr->keys[j];
-        }
-        cout << endl;
+        ptr->print_contents();
     }
 }
