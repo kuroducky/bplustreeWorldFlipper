@@ -62,6 +62,11 @@ int Disk::get_num_records()
     return num_records;
 }
 
+int Disk::get_num_blocks()
+{
+    return blocks.size();
+}
+
 int Disk::get_records_per_block()
 {
     return records_per_block;

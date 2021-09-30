@@ -36,6 +36,7 @@ class Disk
         // Methods
         void insert(record r);
         int get_num_records();
+        int get_num_blocks();
         int get_records_per_block();
         record *get_record(int block_index, int record_index);
         void print_info();

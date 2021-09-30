@@ -147,19 +147,26 @@ void print_index_nodes(vector<Node *> index_nodes, int n)
 
 void print_record_blocks(vector<record *> records, Disk *disk, int n)
 {
-    int block_index, prev_index, records_per_block, count;
+    int block_index, records_per_block, count;
 
     records_per_block = disk->get_records_per_block();
 
     cout << "Number of data blocks (including duplicates): " << records.size() << endl;
 
-    prev_index = -1;
-    count = 0;
-    for(int i=0; i<records.size(); i++)
+    // Checking for dupes
+    int *record_list;
+
+    record_list = new int[disk->get_num_blocks()];
+    for (int i=0; i<records.size(); i++)
+        record_list[i] = 0;
+    
+    count = records.size();
+    for(record *r : records)
     {
-        block_index = records[i]->record_id / records_per_block;
-        if (block_index != prev_index)
-            count++;
+        block_index = r->record_id / records_per_block;
+        if (record_list[block_index] != 0)
+            count--;
+        record_list[block_index]++;
     }
     cout << "Number of data blocks (not including duplicates): " << count << endl;
 
