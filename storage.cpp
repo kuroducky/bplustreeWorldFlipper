@@ -79,41 +79,21 @@ record *Disk::get_record(int block_index, int record_index)
     }
 }
 
-void Disk::print_records()
+void Disk::print_info()
 {
-    // Use default value of 5 if no argument given
-    print_records(5);
-}
-
-void Disk::print_records(int n)
-{
-    record *ptr;
-
-    cout << "Number of blocks: " << blocks.size() << " blocks" << endl;
-    cout << "Size of database: " << setprecision(3) << num_records * sizeof(record) / pow(2, 20) << " MB" << endl;
-
-
-    for (int i=0; i<blocks.size() && i<n; i++)
-    {
-        cout << "Block " << i << ":" << endl;
-        ptr = blocks[i].records;
-
-        for (int j=0; j<records_per_block; j++)
-        {
-            cout << '\t' << ptr[j].tconst << '\t' << ptr[j].averageRating << '\t' << ptr[j].numVotes << endl;
-        }
-    }
+    cout << "Number of blocks: \t" << blocks.size() << " blocks" << endl;
+    cout << "Size of database: \t" << setprecision(3) << num_records * sizeof(record) / pow(2, 20) << " MB" << endl;
 }
 
 void Disk::print_block(int n)
 {
     record *ptr;
 
-    cout << "Block " << n << endl;
+    cout << "\tBlock " << n << endl;
     for (int i=0; i<records_per_block; i++)
     {
         ptr = blocks[n].records;
-        cout << '\t' << ptr[i].tconst << '\t' << ptr[i].numVotes << endl;
+        cout << "\t\t" << ptr[i].tconst << '\t' << ptr[i].numVotes << endl;
     }
 }
 

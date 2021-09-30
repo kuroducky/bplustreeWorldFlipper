@@ -26,7 +26,7 @@ int main()
     // Pack records into a block, and store it in a disk
     Disk disk(block_size);
     disk.import_tsv("data.tsv");
-    disk.print_records();
+    disk.print_info();
 
     /**
      * Experiment 2
@@ -89,7 +89,7 @@ int main()
     
     start_key = 30000;
     end_key = 40000;
-    cout << "Searching with start key: " << start_key << " and end key: " << end_key << endl;
+    cout << "Searching with start key: " << start_key << " and end key: " << end_key << endl << endl;
     b_plus_tree.find(start_key, end_key, records, index_nodes);
 
     // Print number and contents of index nodes
@@ -139,6 +139,7 @@ void print_index_nodes(vector<Node *> index_nodes, int n)
     cout << "Contents of index nodes:" << endl;
     for(int i=0; i<n && i<index_nodes.size(); i++)
     {
+        cout << '\t';
         index_nodes[i]->print_contents();
     }
     cout << endl;

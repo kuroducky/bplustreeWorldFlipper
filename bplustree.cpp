@@ -79,8 +79,8 @@ void BPlusTree::insert(int key, record *r)
     while (!ptr->is_leaf)
     {
         // Find position of key
-        for (i = 0; i < ptr->size && key >= ptr->keys[i]; i++)
-            ;
+        for (i = 0; i < ptr->size && key >= ptr->keys[i]; i++);
+
         // Traverse to next level
         parent = ptr;
         ptr = (Node *)ptr->children[i];
@@ -90,8 +90,7 @@ void BPlusTree::insert(int key, record *r)
     if (ptr->size < keys_per_node)
     {
         // Find position to insert key
-        for (i = 0; i < ptr->size && key >= ptr->keys[i]; i++)
-            ;
+        for (i = 0; i < ptr->size && key >= ptr->keys[i]; i++);
 
         // Shift rest of the keys and pointers
         for (j = ptr->size; j > i; j--)
@@ -174,8 +173,7 @@ void BPlusTree::insert_non_leaf(Node *node, Node *new_child, int key)
     if (node->size < keys_per_node)
     {
         // Find position to insert key
-        for (i = 0; i < node->size && key >= node->keys[i]; i++)
-            ;
+        for (i = 0; i < node->size && key >= node->keys[i]; i++);
 
         // Shift rest of the keys and pointers
         for (j = node->size; j > i; j--)
@@ -670,21 +668,19 @@ void BPlusTree::print_info()
     }
     cout << endl;
 
-    cout << "Contents of children:" << endl;
+    cout << "Contents of first child:" << endl;
     if (root->is_leaf)
     {
-        cout << "NULL";
+        cout << "\tNULL";
     }
     else
     {
-        for (int i = 0; i <= root->size; i++)
+        
+        ptr = (Node *)root->children[0];
+        for (int j = 0; j < ptr->size; j++)
         {
-            ptr = (Node *)root->children[i];
-            for (int j = 0; j < ptr->size; j++)
-            {
-                cout << '\t' << ptr->keys[j];
-            }
-            cout << endl;
+            cout << '\t' << ptr->keys[j];
         }
+        cout << endl;
     }
 }
